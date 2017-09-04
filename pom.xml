@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.messenger4j</groupId>
-	<artifactId>messenger4j-spring-boot-quickstart-template</artifactId>
+	<artifactId>alto-messenger-bot</artifactId>
 	<version>1.0.2</version>
 	<packaging>jar</packaging>
 
