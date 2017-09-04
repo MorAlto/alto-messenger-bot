@@ -9,14 +9,13 @@ public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-
     @JsonProperty("id")
     private long id;
 
     @JsonProperty("question")
     private String question;
 
-    @Column(name = "returnTitle")
+    @JsonProperty("title")
     private String returnTitle;
 
     @JsonProperty("email")
