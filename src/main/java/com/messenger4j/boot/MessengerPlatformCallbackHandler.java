@@ -15,14 +15,18 @@ import com.github.messenger4j.send.buttons.Button;
 import com.github.messenger4j.send.templates.ButtonTemplate;
 import com.github.messenger4j.send.templates.GenericTemplate;
 import com.github.messenger4j.send.templates.ReceiptTemplate;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +50,8 @@ public class MessengerPlatformCallbackHandler {
 
     private final MessengerReceiveClient receiveClient;
     private final MessengerSendClient sendClient;
+
+    private Recipient recipient;
 
     /**
      * Constructs the {@code MessengerPlatformCallbackHandler} and initializes the {@code MessengerReceiveClient}.
@@ -184,7 +190,8 @@ public class MessengerPlatformCallbackHandler {
                     */
 
                     default:
-                        sendTextMessage(senderId, messageText);
+                        //sendTextMessage(senderId, messageText);
+                        sendMessageToAlto(senderId, messageText);
                 }
             } catch (MessengerApiException | MessengerIOException e) {
                 handleSendException(e);
@@ -466,7 +473,6 @@ public class MessengerPlatformCallbackHandler {
 
     private void sendTextMessage(String recipientId, String text) {
 
-        logger.info("CHECKING LOGSSSSSS \n\n\n\n");
         try {
             final Recipient recipient = Recipient.newBuilder().recipientId(recipientId).build();
             final NotificationType notificationType = NotificationType.REGULAR;
@@ -480,5 +486,63 @@ public class MessengerPlatformCallbackHandler {
 
     private void handleSendException(Exception e) {
         logger.error("Message could not be sent. An unexpected error occurred.", e);
+    }
+
+
+    @RequestMapping(method = RequestMethod.POST, value = "/askMessenger")
+    private void sendMessageToAlto(String recipientId, String text) {
+
+            recipient = Recipient.newBuilder().recipientId(recipientId).build();
+          //  final NotificationType notificationType = NotificationType.REGULAR;
+            final String metadata = "DEVELOPER_DEFINED_METADATA";
+
+            RestTemplate rest = new RestTemplate(getClientHttpRequestFactory());
+            HttpHeaders headers = new HttpHeaders();
+
+            headers.add("Content-Type", "application/json");
+            JSONObject body = new JSONObject();
+
+            // String url = Config.getProperty("test.url");
+            String url = "http://localhost:9000/tester";
+
+            body.put("id", 1);
+            body.put("question", text);
+            body.put("email", "mor@alto-ai.com");
+            HttpEntity<String> httpEntity = new HttpEntity(body.toString(), headers);
+            logger.info("Question text: \"" + text  + " \" is sending to listener");
+            ResponseEntity<String> result = rest.exchange(url, HttpMethod.POST, httpEntity, String.class);
+
+        //    this.sendClient.sendTextMessage(recipient, notificationType, text, metadata);
+
+    }
+
+
+    @RequestMapping(method = RequestMethod.POST, value = "/getResponse")
+    public void getResponse(@RequestBody Answer answer) throws UnknownHostException {
+
+        logger.info("Question text: \" " + answer.getId() + " \" returned from sender");
+
+        try {
+            final NotificationType notificationType = NotificationType.REGULAR;
+            final String metadata = "DEVELOPER_DEFINED_METADATA";
+
+            this.sendClient.sendTextMessage(recipient, notificationType, answer.getReturnTitle(), metadata);
+        } catch (MessengerApiException | MessengerIOException e) {
+            handleSendException(e);
+        }
+
+    }
+
+
+
+
+    private ClientHttpRequestFactory getClientHttpRequestFactory() {
+        int timeout = 2 * 60 * 1000;
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        clientHttpRequestFactory.setReadTimeout(timeout);
+        clientHttpRequestFactory.setConnectTimeout(timeout);
+        clientHttpRequestFactory.setConnectionRequestTimeout(timeout);
+
+        return clientHttpRequestFactory;
     }
 }
