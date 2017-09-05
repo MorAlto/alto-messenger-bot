@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication
 public class Application {
-
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     /**
