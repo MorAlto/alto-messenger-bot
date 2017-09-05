@@ -512,7 +512,7 @@ public class MessengerPlatformCallbackHandler {
             logger.info("Question text: \"" + text  + " \" is sending to listener");
             ResponseEntity<String> result = rest.exchange(url, HttpMethod.POST, httpEntity, String.class);
 
-
+            logger.info("        CHECKING IF THE CODE REACH HERE - 2     ");
         //    this.sendClient.sendTextMessage(recipient, notificationType, text, metadata);
 
     }
