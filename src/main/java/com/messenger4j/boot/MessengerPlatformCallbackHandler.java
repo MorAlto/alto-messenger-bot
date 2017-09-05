@@ -190,8 +190,8 @@ public class MessengerPlatformCallbackHandler {
                     */
 
                     default:
-                        //sendTextMessage(senderId, messageText);
-                        sendMessageToAlto(senderId, messageText);
+                        sendTextMessage(senderId, messageText);
+                        //sendMessageToAlto(senderId, messageText);
                 }
             } catch (MessengerApiException | MessengerIOException e) {
                 handleSendException(e);
@@ -512,6 +512,7 @@ public class MessengerPlatformCallbackHandler {
             logger.info("Question text: \"" + text  + " \" is sending to listener");
             ResponseEntity<String> result = rest.exchange(url, HttpMethod.POST, httpEntity, String.class);
 
+
         //    this.sendClient.sendTextMessage(recipient, notificationType, text, metadata);
 
     }
@@ -519,6 +520,9 @@ public class MessengerPlatformCallbackHandler {
 
     @RequestMapping(method = RequestMethod.POST, value = "/getResponse")
     public void getResponse(@RequestBody  JSONObject json) throws UnknownHostException {
+
+        logger.info("REACH HERE");
+        logger.info("JSON IS NULL ::: " +( json == null) + "\n\n\n");
 
         String answer = json.getString("title");
 
