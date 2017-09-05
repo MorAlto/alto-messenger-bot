@@ -503,7 +503,7 @@ public class MessengerPlatformCallbackHandler {
             JSONObject body = new JSONObject();
 
             // String url = Config.getProperty("test.url");
-            String url = "https://localhost:9000/tester";
+            String url = "http://localhost:9000/tester";
 
             body.put("id", 1);
             body.put("question", text);
