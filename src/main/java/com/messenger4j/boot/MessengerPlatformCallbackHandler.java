@@ -518,15 +518,17 @@ public class MessengerPlatformCallbackHandler {
 
 
     @RequestMapping(method = RequestMethod.POST, value = "/getResponse")
-    public void getResponse(@RequestBody Answer answer) throws UnknownHostException {
+    public void getResponse(@RequestBody  JSONObject json) throws UnknownHostException {
 
-        logger.info("Question text: \" " + answer.getId() + " \" returned from sender");
+        String answer = json.getString("title");
+
+        logger.info("Question text: \" " + answer + " \" returned from sender");
 
         try {
             final NotificationType notificationType = NotificationType.REGULAR;
             final String metadata = "DEVELOPER_DEFINED_METADATA";
 
-            this.sendClient.sendTextMessage(recipient, notificationType, answer.getReturnTitle(), metadata);
+            this.sendClient.sendTextMessage(recipient, notificationType, answer, metadata);
         } catch (MessengerApiException | MessengerIOException e) {
             handleSendException(e);
         }
