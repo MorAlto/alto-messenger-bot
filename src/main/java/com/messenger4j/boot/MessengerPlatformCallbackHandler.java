@@ -190,8 +190,8 @@ public class MessengerPlatformCallbackHandler {
                     */
 
                     default:
-                       // sendTextMessage(senderId, messageText);
-                        sendMessageToAlto(senderId, messageText);
+                        sendTextMessage(senderId, messageText);
+                       // sendMessageToAlto(senderId, messageText);
                 }
             } catch (MessengerApiException | MessengerIOException e) {
                 handleSendException(e);
